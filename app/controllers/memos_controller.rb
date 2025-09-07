@@ -29,8 +29,8 @@ class MemosController < ApplicationController
         format.json { render :show, status: :created, location: @memo }
       else
         flash.now[:alert] = "Could not create."
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @memo.errors, status: :unprocessable_entity }
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @memo.errors, status: :unprocessable_content }
       end
     end
   end
@@ -43,8 +43,8 @@ class MemosController < ApplicationController
         format.json { render :show, status: :ok, location: @memo }
       else
         flash.now[:alert] = "Could not update."
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @memo.errors, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @memo.errors, status: :unprocessable_content }
       end
     end
   end
@@ -57,7 +57,7 @@ class MemosController < ApplicationController
         format.json { head :no_content }
       else
         format.html { redirect_to memos_path, alert: "Could not destroy.", status: :see_other }
-        format.json { render json: @memo.errors, status: :unprocessable_entity }
+        format.json { render json: @memo.errors, status: :unprocessable_content }
       end
     end
   end
