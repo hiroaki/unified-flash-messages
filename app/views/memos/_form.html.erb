@@ -1,4 +1,15 @@
-<%= form_with(model: memo, class: "contents") do |form| %>
+<%=
+  form_with(
+    model: memo,
+    class: "contents",
+    data: {
+      controller: "ng-filter",
+      action: "submit->ng-filter#validate",
+      ng_filter_forbidden_value: "test",
+      ng_filter_alert_message_value: "Submission blocked: contains forbidden word."
+    }
+  ) do |form|
+%>
   <% if memo.errors.any? %>
     <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
       <h2><%= pluralize(memo.errors.count, "error") %> prohibited this memo from being saved:</h2>
