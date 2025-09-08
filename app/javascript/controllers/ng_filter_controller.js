@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { appendMessageToStorage, renderFlashMessages, clearFlashMessages } from "flash_messages"
 
 // Minimal NG-word filter for demo purposes.
 // Blocks form submission if any input/textarea contains the word "test" (case-insensitive).
@@ -12,7 +13,10 @@ export default class extends Controller {
 
 		if (this.forbiddenValue && text.includes(this.forbiddenValue)) {
 			event.preventDefault();
-			alert(this.alertMessageValue || 'Submission blocked: contains forbidden word.');
-		}
+      const message = this.alertMessageValue || 'Submission blocked: contains forbidden word.';
+      clearFlashMessages(message);
+      appendMessageToStorage(message, 'alert');
+      renderFlashMessages();
+    }
 	}
 }
