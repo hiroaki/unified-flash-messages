@@ -64,4 +64,7 @@ Rails.application.configure do
   #
   # Skip DNS rebinding protection for the default health check endpoint.
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+
+  # Custom: limit for memos index
+  config.memos_index_limit = 10
 end

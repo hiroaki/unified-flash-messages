@@ -3,7 +3,7 @@ class MemosController < ApplicationController
 
   # GET /memos or /memos.json
   def index
-    @memos = Memo.all
+    @memos = Memo.order(created_at: :desc).limit(memos_index_limit)
   end
 
   # GET /memos/1 or /memos/1.json
@@ -63,6 +63,12 @@ class MemosController < ApplicationController
   end
 
   private
+
+    # Returns the memos index limit from config, or 10 if not set
+    def memos_index_limit
+      Rails.configuration.respond_to?(:memos_index_limit) ? Rails.configuration.memos_index_limit : 10
+    end
+
     # Use callbacks to share common setup or constraints between actions.
     def set_memo
       @memo = Memo.find(params.expect(:id))
