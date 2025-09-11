@@ -123,7 +123,6 @@ When `renderFlashMessages()` is executed, the embedded messages are inserted int
 Once collected, messages are removed from the DOM to prevent duplicate display.
 
 
-
 ## Tag Helpers
 
 Since tag generation for setup is patterned, main helper functions are provided in `ApplicationHelper`:
@@ -135,7 +134,6 @@ Since tag generation for setup is patterned, main helper functions are provided 
 | `flash_container` | Generates a container (display area) for messages |
 | `flash_global_storage` | Generates a global storage for Turbo Stream. Not needed if you do not use Turbo Stream. |
 | `flash_general_error_messages` | Generates a list of general messages for HTTP status and network errors. Used for the extension features described below. |
-
 
 
 ## Public API
@@ -150,7 +148,6 @@ The following functions are exported from `flash_messages.js`:
 | `clearFlashMessages(message?)` | Clears displayed messages. If `message` is omitted, all messages are cleared |
 
 
-
 ## Setup Instructions
 
 To try this Rails application, set up your environment as follows.
@@ -159,19 +156,19 @@ To try this Rails application, set up your environment as follows.
 
 A `compose.yml` is provided. Please check its contents and build:
 
-```
+```bash
 $ docker compose up --build
 ```
 
-Note that the Rails server does not start automatically, so operate it from inside the container. All other Rails commands should also be run inside the container.
-
-
 Once the container is up, run the "Initial Setup" described below from inside the container.
 
-Note: The Rails server does not start automatically when the container launches. Start the server and run all Rails commands from inside the container.
+Note: The Rails server does not start automatically when the container launches. Start the server and run all Rails commands from inside the container. To make the server accessible from outside the container, bind to `0.0.0.0`:
+
+```bash
+$ docker compose exec -e BINDING=0.0.0.0 web bin/rails s
+```
 
 The container started by this compose file uses a bind mount to mount the current directory on the host to the container. Changes on the host are immediately reflected in Rails inside the container.
-
 
 ### Without Docker
 
@@ -179,22 +176,34 @@ This is a simple Rails app, so nothing special is required. The database uses SQ
 
 ### Initial Setup
 
-Set up the database:
+Run `bundle install` and set up the database:
 
 ```bash
-$ bin/setup
+$ docker compose exec web bundle install
+$ docker compose exec web bin/rails db:prepare
+```
+
+Or:
+
+```bash
+$ docker compose exec web bin/setup --skip-server
 ```
 
 ### Tailwind CSS
 
 Since Tailwind is used for CSS, you need to build it when you first set up or after changing CSS:
-```
-$ bin/rails tailwindcss:build
+```bash
+$ docker compose exec web bin/rails tailwindcss:build
 ```
 
 During development, it is convenient to run the process that automatically detects changes and rebuilds:
+```bash
+$ docker compose exec web bin/rails tailwindcss:watch
 ```
-$ bin/rails tailwindcss:watch
+
+You can use `bin/dev` to start both Rails and Tailwind auto-build processes at once:
+```bash
+$ docker compose exec -e BINDING=0.0.0.0 web bin/dev
 ```
 
 
@@ -203,7 +212,8 @@ $ bin/rails tailwindcss:watch
 
 This application is just a scaffolded Memo model created as follows:
 
-```
+
+```bash
 $ rails generate scaffold Memo title:string description:text
 ```
 

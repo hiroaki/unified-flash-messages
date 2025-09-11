@@ -154,13 +154,17 @@ if (document.readyState === "loading") {
 
 `compose.yml` を用意していますので、内容を確認のうえビルドしてください。
 
-```
+```bash
 $ docker compose up --build
 ```
 
 コンテナが立ち上がったら、コンテナ内から、後述の "初回セットアップ" を実行してください。
 
-なおコンテナの起動において、 Rails サーバは自動では起動しません。サーバの起動、およびその他 Rails コマンドの類はすべて、コンテナ内から実行します。
+なおコンテナの起動において、 Rails サーバは自動では起動しません。サーバの起動、およびその他 Rails コマンドの類はすべて、コンテナ内から実行します。コンテナの外部からもアクセスできるように、アドレスは `0.0.0.0` をバインドしてください：
+
+```bash
+$ docker compose exec -e BINDING=0.0.0.0 web bin/rails s
+```
 
 この compose で起動したコンテナは、バインド・マウントの設定で、ホスト上のカレント・ディレクトリをコンテナにマウントしています。ホスト上の修正はコンテナ内の Rails に即座に反映されます。
 
@@ -170,29 +174,41 @@ $ docker compose up --build
 
 ### 初回セットアップ
 
-データベースをセットアップしてください。
+`bundle install` を実行し、データベースをセットアップしてください：
 
 ```bash
-$ bin/setup
+$ docker compose exec web bundle install
+$ docker compose exec web bin/rails db:prepare
+```
+
+または：
+
+```bash
+$ docker compose exec web bin/setup --skip-server
 ```
 
 ### Tailwind CSS
 
 CSS には Tailwind を使用しているため、はじめてセットアップした時や、その後 CSS を変更した際はビルドが必要です。
-```
-$ bin/rails tailwindcss:build
+```bash
+$ docker compose exec web bin/rails tailwindcss:build
 ```
 
 開発中は、自動で変更を検知してビルドするプロセスを実行しておくとよいでしょう。
+```bash
+$ docker compose exec web bin/rails tailwindcss:watch
 ```
-$ bin/rails tailwindcss:watch
+
+`bin/dev` を使用すれば、 Rails の起動と Tailwind の自動ビルドのプロセスを同時に起動できます：
+```bash
+$ docker compose exec -e BINDING=0.0.0.0 web bin/dev
 ```
 
 ## 動作確認例
 
 このアプリケーションは、次のように Memo モデルを scaffold で作成しただけのものです。
 
-```
+```bash
 $ rails generate scaffold Memo title:string description:text
 ```
 
