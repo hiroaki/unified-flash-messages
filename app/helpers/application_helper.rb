@@ -1,7 +1,7 @@
 module ApplicationHelper
   # General flash-storage using by Turbo Stream
   def flash_global_storage
-    content_tag(:div, '', id: 'flash-storage', style: 'display: none;')
+    content_tag(:div, "", id: "flash-storage", style: "display: none;")
   end
 
   # flash message storage
@@ -17,7 +17,7 @@ module ApplicationHelper
 
   # flash message display container
   def flash_container
-    content_tag(:div, '', data: { flash_message_container: true })
+    content_tag(:div, "", data: { flash_message_container: true })
   end
 
   # Flash message templates for JS rendering
@@ -25,19 +25,19 @@ module ApplicationHelper
   def flash_templates
     templates = [
       {
-        id: 'alert',
-        text_color: 'text-red-700',
-        bg_color: 'bg-red-100'
+        id: "alert",
+        text_color: "text-red-700",
+        bg_color: "bg-red-100"
       },
       {
-        id: 'notice',
-        text_color: 'text-blue-700',
-        bg_color: 'bg-blue-100'
+        id: "notice",
+        text_color: "text-blue-700",
+        bg_color: "bg-blue-100"
       },
       {
-        id: 'warning',
-        text_color: 'text-yellow-700',
-        bg_color: 'bg-yellow-100'
+        id: "warning",
+        text_color: "text-yellow-700",
+        bg_color: "bg-yellow-100"
       }
     ]
 
@@ -45,9 +45,9 @@ module ApplicationHelper
       templates.map do |tpl|
         content_tag(:template, id: "flash-message-template-#{tpl[:id]}") do
           content_tag(:div,
-            content_tag(:span, '', class: 'flash-message-text'),
+            content_tag(:span, "", class: "flash-message-text"),
             class: "p-4 mb-4 text-sm rounded-lg #{tpl[:text_color]} #{tpl[:bg_color]}",
-            role: 'alert'
+            role: "alert"
           )
         end
       end
@@ -63,7 +63,7 @@ module ApplicationHelper
       network
     ]
 
-    content_tag(:ul, id: 'general-error-messages', style: 'display: none;') do
+    content_tag(:ul, id: "general-error-messages", style: "display: none;") do
       safe_join(
         status_codes.map do |code|
           content_tag(:li, t("http_status_messages.#{code}"), data: { status: code })
