@@ -25,11 +25,12 @@ class MemosController < ApplicationController
 
     respond_to do |format|
       if @memo.save
-        format.html { redirect_to @memo, notice: "Memo was successfully created." }
+        format.html { redirect_to @memo, notice: "Created successfully." }
         format.json { render :show, status: :created, location: @memo }
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @memo.errors, status: :unprocessable_entity }
+        flash.now[:alert] = "Could not create."
+        format.html { render :new, status: :unprocessable_content }
+        format.json { render json: @memo.errors, status: :unprocessable_content }
       end
     end
   end
@@ -38,22 +39,26 @@ class MemosController < ApplicationController
   def update
     respond_to do |format|
       if @memo.update(memo_params)
-        format.html { redirect_to @memo, notice: "Memo was successfully updated.", status: :see_other }
+        format.html { redirect_to @memo, notice: "Updated successfully.", status: :see_other }
         format.json { render :show, status: :ok, location: @memo }
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @memo.errors, status: :unprocessable_entity }
+        flash.now[:alert] = "Could not update."
+        format.html { render :edit, status: :unprocessable_content }
+        format.json { render json: @memo.errors, status: :unprocessable_content }
       end
     end
   end
 
   # DELETE /memos/1 or /memos/1.json
   def destroy
-    @memo.destroy!
-
     respond_to do |format|
-      format.html { redirect_to memos_path, notice: "Memo was successfully destroyed.", status: :see_other }
-      format.json { head :no_content }
+      if @memo.destroy
+        format.html { redirect_to memos_path, notice: "Destroyed successfully.", status: :see_other }
+        format.json { head :no_content }
+      else
+        format.html { redirect_to memos_path, alert: "Could not destroy.", status: :see_other }
+        format.json { render json: @memo.errors, status: :unprocessable_content }
+      end
     end
   end
 
