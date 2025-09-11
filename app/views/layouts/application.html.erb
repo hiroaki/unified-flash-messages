@@ -23,6 +23,9 @@
   </head>
 
   <body>
+    <%= flash_templates %>
+    <%= flash_general_error_messages %>
+    <%= flash_global_storage %>
     <main class="container mx-auto mt-28 px-5 flex">
       <%= yield %>
     </main>
