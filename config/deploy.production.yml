@@ -1,0 +1,10 @@
+proxy:
+  ssl: true
+
+builder:
+  args:
+    RAILS_ENV: production
+
+env:
+  clear:
+    RAILS_ENV: production
