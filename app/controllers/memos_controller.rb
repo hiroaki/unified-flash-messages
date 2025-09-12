@@ -18,18 +18,12 @@ class MemosController < ApplicationController
       sort_order: params[:sort_order]
     )
 
-    # TODO
-    @offset_out_of_range = params[:offset].present? && @memos.empty?
-
-    respond_to do |format|
-      format.html
-      format.json { render :index }
+    if params[:offset].present? && @memos.empty?
+      flash.now[:warning] = "The specified offset value is invalid or out of range."
     end
-  rescue InvalidLimitError => e
-    respond_to do |format|
-      format.html { render plain: e.message, status: :bad_request }
-      format.json { render json: { error: e.message }, status: :bad_request }
-    end
+  rescue InvalidLimitError => ex
+    @memos = Memo.none
+    flash.now[:alert] = "#{ex.message}"
   end
 
   # GET /memos/1
