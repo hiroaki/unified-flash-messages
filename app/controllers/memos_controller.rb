@@ -1,29 +1,31 @@
 class MemosController < ApplicationController
   before_action :set_memo, only: %i[ show edit update destroy ]
 
+  # Custom exception raised when the provided `offset` is invalid.
+  InvalidOffsetError = Class.new(StandardError)
+
   # Custom exception raised when the provided `limit` is invalid.
   InvalidLimitError = Class.new(StandardError)
 
+  # Custom exception raised when the provided `sort_order` is invalid.
+  InvalidSortOrderError = Class.new(StandardError)
+
   # GET /memos
   def index
-    limit_value = if params[:limit].present?
-      extract_limit_value!(params[:limit])
-    else
-      memos_default_limit
-    end
-
+    # Call memoized helpers directly to keep the action concise.
     @memos = Memo.fetch_for_index(
-      offset: params[:offset],
-      limit: limit_value,
-      sort_order: params[:sort_order]
+      offset: memos_offset_value,
+      limit: memos_limit_value,
+      sort_order: memos_sort_order_value
     )
 
-    if params[:offset].present? && @memos.empty?
+    # Don't warn when offset is 0 — an empty result can be valid for page 0.
+    if memos_offset_value.to_i != 0 && @memos.empty?
       flash.now[:warning] = "The specified offset value is invalid or out of range."
     end
-  rescue InvalidLimitError => ex
+  rescue InvalidOffsetError, InvalidLimitError, InvalidSortOrderError => ex
     @memos = Memo.none
-    flash.now[:alert] = "#{ex.message}"
+    flash.now[:alert] = ex.message
   end
 
   # GET /memos/1
@@ -84,6 +86,16 @@ class MemosController < ApplicationController
 
   private
 
+    # Use callbacks to share common setup or constraints between actions.
+    def set_memo
+      @memo = Memo.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def memo_params
+      params.require(:memo).permit(:title, :description)
+    end
+
     # Returns the configured maximum allowed `limit` for the memos index.
     # Memoized per-request so multiple calls return the same value without
     # repeatedly querying `Rails.configuration`.
@@ -95,6 +107,26 @@ class MemosController < ApplicationController
       else
         10
       end
+    end
+
+    # Compute and memoize effective offset/limit/sort_order values for index.
+    def memos_offset_value
+      @memos_offset_value ||= extract_offset_value! || memos_default_offset
+    end
+
+    def memos_limit_value
+      @memos_limit_value ||= extract_limit_value! || memos_default_limit
+    end
+
+    def memos_sort_order_value
+      @memos_sort_order_value ||= extract_sort_order! || memos_default_sort_order
+    end
+
+    # Default offset when the user doesn't supply one. Kept as a method so
+    # defaults are centralized and easily changeable. `0` is a no-op offset
+    # and is safe to pass through to ActiveRecord's `offset`.
+    def memos_default_offset
+      0
     end
 
     # Default `limit` value when the user doesn't supply one.
@@ -109,18 +141,38 @@ class MemosController < ApplicationController
       end
     end
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_memo
-      @memo = Memo.find(params[:id])
+    # Default sort order for index when the user doesn't supply one.
+    def memos_default_sort_order
+      Memo.default_sort_order
     end
 
-    # Only allow a list of trusted parameters through.
-    def memo_params
-      params.require(:memo).permit(:title, :description)
+    # Validate and normalize offset parameter from `params`.
+    # Returns integer offset or raises InvalidOffsetError on invalid input.
+    def extract_offset_value!
+      raw_offset = params[:offset]
+      # If the parameter is not present (nil or blank), return nil so callers
+      # can fall back to defaults. Only validate when the param is present.
+      return nil unless raw_offset.present?
+      parsed = begin
+        Integer(raw_offset)
+      rescue ArgumentError, TypeError
+        nil
+      end
+
+      if parsed.nil?
+        raise InvalidOffsetError, "offset must be an integer"
+      elsif parsed < 0
+        raise InvalidOffsetError, "offset must be >= 0"
+      end
+
+      parsed
     end
 
     # Validate and normalize limit parameter.
-    def extract_limit_value!(raw_limit)
+    def extract_limit_value!
+      raw_limit = params[:limit]
+      return nil unless raw_limit.present?
+
       parsed = begin
         Integer(raw_limit)
       rescue ArgumentError, TypeError
@@ -133,6 +185,21 @@ class MemosController < ApplicationController
         raise InvalidLimitError, "limit must be a positive integer"
       elsif parsed > memos_max_limit
         raise InvalidLimitError, "limit must be <= #{memos_max_limit}"
+      end
+
+      parsed
+    end
+
+    # Validate and normalize sort_order parameter. Must be one of the values
+    # returned by `Memo.sort_orders`.
+    def extract_sort_order!
+      raw_sort_order = params[:sort_order]
+      return nil unless raw_sort_order.present?
+
+      parsed = raw_sort_order.to_s.downcase
+
+      unless Memo.valid_sort_order?(parsed)
+        raise InvalidSortOrderError, "sort_order must be one of: #{Memo.sort_orders.join(', ')}"
       end
 
       parsed

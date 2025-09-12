@@ -28,7 +28,11 @@
 
       <div class="flex items-center space-x-2">
         <label for="sort_order" class="text-sm">order:</label>
-        <%= f.select :sort_order, options_for_select([['Newest first (desc)', 'desc'], ['Oldest first (asc)', 'asc']], params[:sort_order] || 'desc'), { include_blank: false }, { id: 'sort_order', class: 'rounded-md border px-2 py-1' } %>
+        <%# TODO: Use user-friendly labels and I18n here in a future change. For
+            now we keep labels identical to the model values to avoid leaking
+            model constants into the template. %>
+        <% sort_options = Memo.sort_orders.map { |o| [o, o] } %>
+        <%= f.select :sort_order, options_for_select(sort_options, params[:sort_order] || Memo.default_sort_order), { include_blank: false }, { id: 'sort_order', class: 'rounded-md border px-2 py-1' } %>
       </div>
 
       <div class="flex items-center space-x-2">
