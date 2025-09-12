@@ -26,7 +26,13 @@
     <%= flash_templates %>
     <%= flash_general_error_messages %>
     <%= flash_global_storage %>
-    <main class="container mx-auto mt-28 px-5 flex">
+
+    <div id="time-current" class="container px-5">
+      <span><%= Time.current.strftime("%Y-%m-%d %H:%M:%S.%L") %></span>
+      <span class="text-sm text-gray-400">(If unchanged, this indicates that a Turbo Frame partial update occurred.)</span>
+    </div>
+
+    <main class="container mx-auto mt-8 px-5 flex">
       <%= yield %>
     </main>
   </body>
