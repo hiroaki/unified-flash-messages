@@ -9,7 +9,26 @@
     <%= link_to "New memo", new_memo_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
   </div>
 
-  <div id="memos" class="min-w-full divide-y divide-gray-200 space-y-5">
+  <%= form_with url: memos_path, method: :get, data: { turbo_frame: 'memos', turbo_action: 'replace' }, class: "my-4 flex items-center space-x-3" do |f| %>
+    <div class="flex items-center space-x-2">
+      <label for="offset" class="text-sm">offset:</label>
+      <%= f.number_field :offset, value: (params[:offset].presence || 0), id: "offset", class: "rounded-md border px-2 py-1 w-24", min: 0 %>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <label for="sort_order" class="text-sm">order:</label>
+      <%= f.select :sort_order, options_for_select([['Newest first (desc)', 'desc'], ['Oldest first (asc)', 'asc']], params[:sort_order] || 'desc'), { include_blank: false }, { id: 'sort_order', class: 'rounded-md border px-2 py-1' } %>
+    </div>
+
+    <div class="flex items-center space-x-2">
+      <label for="limit" class="text-sm">limit:</label>
+      <%= f.number_field :limit, value: (params[:limit].presence || (Rails.configuration.respond_to?(:memos_default_limit) ? Rails.configuration.memos_default_limit : 10)), id: "limit", class: "rounded-md border px-2 py-1 w-24", min: 1 %>
+    </div>
+
+    <%= f.submit "Apply", class: "rounded-md px-3 py-1 bg-gray-200 hover:bg-gray-100" %>
+  <% end %>
+
+  <%= turbo_frame_tag "memos", class: "min-w-full divide-y divide-gray-200 space-y-5" do %>
     <% if @memos.any? %>
       <% @memos.each do |memo| %>
         <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
@@ -24,5 +43,5 @@
     <% else %>
       <p class="text-center my-10">No memos found.</p>
     <% end %>
-  </div>
+  <% end %>
 </div>
