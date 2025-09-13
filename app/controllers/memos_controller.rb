@@ -21,10 +21,20 @@ class MemosController < ApplicationController
 
     # Don't warn when offset is 0 — an empty result can be valid for page 0.
     if memos_offset_value.to_i != 0 && @memos.empty?
-      flash.now[:warning] = "The specified offset value is invalid or out of range."
+      flash.now[:warning] = "No memos found for the specified offset; it may be out of range."
+      @memos_param_warning = :offset
     end
   rescue InvalidOffsetError, InvalidLimitError, InvalidSortOrderError => ex
     @memos = Memo.none
+    # Expose which parameter caused the error so the view can highlight it.
+    @memos_param_error =
+      case ex
+      when InvalidOffsetError then :offset
+      when InvalidLimitError then :limit
+      when InvalidSortOrderError then :sort_order
+      else
+        nil
+      end
     flash.now[:alert] = ex.message
   end
 

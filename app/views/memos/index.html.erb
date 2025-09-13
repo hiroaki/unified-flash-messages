@@ -21,24 +21,30 @@
                   },
                   class: "my-4 flex items-center space-x-3" do |f| %>
 
-      <div class="flex items-center space-x-2">
-        <label for="offset" class="text-sm">offset:</label>
-        <%= f.number_field :offset, value: (params[:offset].presence || 0), id: "offset", class: "rounded-md border px-2 py-1 w-24", min: 0 %>
-      </div>
+      <%= filter_control(f, :offset,
+        label_text: "offset:",
+        default: (params[:offset].presence || 0),
+        number_min: 0,
+        param_error: (@memos_param_error == :offset),
+        param_warning: (@memos_param_warning == :offset)
+      ) %>
 
-      <div class="flex items-center space-x-2">
-        <label for="sort_order" class="text-sm">order:</label>
-        <%# TODO: Use user-friendly labels and I18n here in a future change. For
-            now we keep labels identical to the model values to avoid leaking
-            model constants into the template. %>
-        <% sort_options = Memo.sort_orders.map { |o| [o, o] } %>
-        <%= f.select :sort_order, options_for_select(sort_options, params[:sort_order] || Memo.default_sort_order), { include_blank: false }, { id: 'sort_order', class: 'rounded-md border px-2 py-1' } %>
-      </div>
+      <% sort_options = Memo.sort_orders.map { |o| [o, o] } %>
+      <%= filter_control(f, :sort_order,
+        label_text: "order:",
+        select_options: sort_options,
+        default: (params[:sort_order] || Memo.default_sort_order),
+        param_error: (@memos_param_error == :sort_order),
+        param_warning: (@memos_param_warning == :sort_order)
+      ) %>
 
-      <div class="flex items-center space-x-2">
-        <label for="limit" class="text-sm">limit:</label>
-        <%= f.number_field :limit, value: (params[:limit].presence || (Rails.configuration.respond_to?(:memos_default_limit) ? Rails.configuration.memos_default_limit : 10)), id: "limit", class: "rounded-md border px-2 py-1 w-24", min: 1 %>
-      </div>
+      <%= filter_control(f, :limit,
+        label_text: "limit:",
+        default: (params[:limit].presence || (Rails.configuration.respond_to?(:memos_default_limit) ? Rails.configuration.memos_default_limit : 10)),
+        number_min: 1,
+        param_error: (@memos_param_error == :limit),
+        param_warning: (@memos_param_warning == :limit)
+      ) %>
 
       <%= f.submit "Apply", class: "rounded-md px-3 py-1 bg-gray-200 hover:bg-gray-100" %>
     <% end %>
