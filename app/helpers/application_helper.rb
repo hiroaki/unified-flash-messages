@@ -17,7 +17,7 @@ module ApplicationHelper
 
   # flash message display container
   def flash_container
-    content_tag(:div, "", data: { flash_message_container: true })
+    content_tag(:div, "", class: "my-4", data: { flash_message_container: true })
   end
 
   # Flash message templates for JS rendering

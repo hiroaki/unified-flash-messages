@@ -1,12 +1,12 @@
 <% content_for :title, "Memos" %>
 
 <div class="w-full">
-  <%= flash_container %>
-
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Memos</h1>
     <%= link_to "New memo", new_memo_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
   </div>
+
+  <%= flash_container %>
 
   <%= turbo_frame_tag "memos" do %>
     <%= flash_storage %>
