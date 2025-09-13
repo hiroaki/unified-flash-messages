@@ -8,7 +8,7 @@
 
   <%= flash_container %>
 
-  <%= turbo_frame_tag "memos" do %>
+  <%= turbo_frame_tag "memos", target: "_top" do %>
     <%= flash_storage %>
 
     <%= form_with url: memos_path,
