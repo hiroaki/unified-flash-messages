@@ -206,21 +206,32 @@ $ docker compose exec -e BINDING=0.0.0.0 web bin/dev
 
 ## 動作確認例
 
-このアプリケーションは、次のように Memo モデルを scaffold で作成しただけのものです。
-
+このアプリケーションは、次のように Memo モデルを scaffold で作成しものがベースになっています：
 ```bash
 $ rails generate scaffold Memo title:string description:text
 ```
 
-サーバサイドではレスポンスの際に Flash メッセージがセットされるよう実装しています。またクライアントサイドから表示するメッセージも実装してあり、それぞれ次のような手順で確認できます：
+サーバサイドではレスポンスの際に Flash メッセージがセットされるよう実装しています。これは通常の Flash メッセージの使い方になります。
 
 | シナリオ | 手順 | 期待される Flash のタイプとメッセージ |
-|----------|------|-------------------|
+|---|---|---|
 | 新規作成成功 | タイトル/説明を入力し保存 | notice: "Created successfully." |
 | バリデーション失敗 | 空で送信 | alert: "Could not create." |
 | 編集成功 | 既存メモを編集保存 | notice: "Updated successfully." |
 | 削除成功 | Destroy ボタン | notice: "Destroyed successfully." |
-| クライアント由来 | 文字列 "test" を送信 | alert: "Submission blocked: contains forbidden word." |
+
+一覧（ index アクション）画面には、絞り込みのフォームがあります。これは Turbo Frame で実装している部分で、絞り込み結果はページ全体ではなく、検索結果のリストを表示するフレーム内のみを更新します。
+
+| シナリオ | 手順 | 期待される Flash のタイプとメッセージ |
+|---|---|---|
+| offset 範囲外 | 全件数より大きな値を offset に入力して Apply | warning: "No memos found for the specified offset; it may be out of range." |
+| limit 制限超過| 内部の制限値 10 を超えた値を limit に入力して Apply | alert: "limit must be <= 10" |
+
+またクライアントサイドから表示するメッセージも実装してあり、それぞれ次のような手順で確認できます：
+
+| シナリオ | 手順 | 期待される Flash のタイプとメッセージ |
+|---|---|---|
+| 禁止文字列 | 文字列 "test" を送信 | alert: "Submission blocked: contains forbidden word." |
 
 
 ## 拡張機能（オプション）

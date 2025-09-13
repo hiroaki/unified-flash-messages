@@ -66,5 +66,8 @@ Rails.application.configure do
   # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 
   # Custom: limit for memos index
-  config.memos_index_limit = 10
+  config.memos_max_limit = 10
+
+  # Custom: default `limit` to use in the index when user doesn't specify one.
+  config.memos_default_limit = 3
 end
