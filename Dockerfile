@@ -78,7 +78,7 @@ COPY --from=build /rails /rails
 # Run and own only the runtime files as a non-root user for security
 RUN useradd rails --create-home --shell /bin/bash && \
     mkdir -p /rails/db /rails/log /rails/storage /rails/tmp && \
-    chown -R rails:rails /rails
+    chown -R rails:rails /rails /usr/local/bundle
 USER rails:rails
 
 # Entrypoint prepares the database

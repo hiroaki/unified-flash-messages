@@ -1,15 +1,54 @@
 <% content_for :title, "Memos" %>
 
 <div class="w-full">
-  <%= flash_storage %>
-  <%= flash_container %>
-
   <div class="flex justify-between items-center">
     <h1 class="font-bold text-4xl">Memos</h1>
     <%= link_to "New memo", new_memo_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
   </div>
 
-  <div id="memos" class="min-w-full divide-y divide-gray-200 space-y-5">
+  <%= flash_container %>
+
+  <%= turbo_frame_tag "memos", target: "_top" do %>
+    <%= flash_storage %>
+
+    <%= form_with url: memos_path,
+                  method: :get,
+                  data: {
+                    turbo_frame: 'memos',
+                    turbo_action: 'advance',
+                    controller: 'clear-flash-messages',
+                    action: 'submit->clear-flash-messages#clear'
+                  },
+                  class: "my-4 flex items-center space-x-3" do |f| %>
+
+      <%= filter_control(f, :offset,
+        label_text: "offset:",
+        default: (params[:offset].presence || 0),
+        number_min: 0,
+        param_error: (@memos_param_error == :offset),
+        param_warning: (@memos_param_warning == :offset)
+      ) %>
+
+      <% sort_options = Memo.sort_orders.map { |o| [o, o] } %>
+      <%= filter_control(f, :sort_order,
+        label_text: "order:",
+        select_options: sort_options,
+        default: (params[:sort_order] || Memo.default_sort_order),
+        param_error: (@memos_param_error == :sort_order),
+        param_warning: (@memos_param_warning == :sort_order)
+      ) %>
+
+      <%= filter_control(f, :limit,
+        label_text: "limit:",
+        default: (params[:limit].presence || (Rails.configuration.respond_to?(:memos_default_limit) ? Rails.configuration.memos_default_limit : 10)),
+        number_min: 1,
+        param_error: (@memos_param_error == :limit),
+        param_warning: (@memos_param_warning == :limit)
+      ) %>
+
+      <%= f.submit "Apply", class: "rounded-md px-3 py-1 bg-gray-200 hover:bg-gray-100" %>
+    <% end %>
+
     <% if @memos.any? %>
       <% @memos.each do |memo| %>
         <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
@@ -24,5 +63,5 @@
     <% else %>
       <p class="text-center my-10">No memos found.</p>
     <% end %>
-  </div>
+  <% end %>
 </div>
