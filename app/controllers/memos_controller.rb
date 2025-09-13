@@ -98,12 +98,12 @@ class MemosController < ApplicationController
 
     # Use callbacks to share common setup or constraints between actions.
     def set_memo
-      @memo = Memo.find(params[:id])
+      @memo = Memo.find(params.expect(:id))
     end
 
     # Only allow a list of trusted parameters through.
     def memo_params
-      params.require(:memo).permit(:title, :description)
+      params.expect(memo: [ :title, :description ])
     end
 
     # Returns the configured maximum allowed `limit` for the memos index.
