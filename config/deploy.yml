@@ -50,3 +50,8 @@ ssh:
 <% ENV.fetch('DEPLOY_SSH_KEYS').split(',').each do |key| %>
     - <%= key.strip %>
 <% end %>
+
+<% if ENV['DEPLOY_VOLUMES_STORAGE'].present? %>
+volumes:
+  - "<%= ENV['DEPLOY_VOLUMES_STORAGE'] %>:/rails/storage"
+<% end %>
