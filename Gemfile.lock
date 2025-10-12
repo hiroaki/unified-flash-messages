@@ -1,3 +1,10 @@
+PATH
+  remote: gems
+  specs:
+    flash_unified (0.1.0)
+      rails (>= 7.1)
+      turbo-rails (>= 2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -338,6 +345,7 @@ DEPENDENCIES
   bootsnap
   brakeman
   debug
+  flash_unified (= 0.1.0)!
   importmap-rails
   jbuilder
   kamal

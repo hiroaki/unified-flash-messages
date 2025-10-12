@@ -36,7 +36,7 @@ services:
     environment:
       DOCKER: 1
       RAILS_ENV: development
-    command: bundle exec rails console
+    command: /bin/bash
     ports:
       - "3000:3000"
     volumes:

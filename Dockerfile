@@ -35,6 +35,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qq \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install application gems
+COPY gems gems
 COPY Gemfile Gemfile.lock ./
 RUN if [ "$RAILS_ENV" = "development" ]; then \
       bundle config unset --local without; \
@@ -69,6 +70,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qq \
   curl \
   libsqlite3-0 \
   tzdata \
+  && if [ "$RAILS_ENV" = "development" ]; then \
+    apt-get install --no-install-recommends -y build-essential pkg-config libyaml-dev libsqlite3-dev; \
+  fi \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts: gems, application
