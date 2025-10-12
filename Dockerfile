@@ -35,6 +35,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qq \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install application gems
+COPY gems gems
 COPY Gemfile Gemfile.lock ./
 RUN if [ "$RAILS_ENV" = "development" ]; then \
       bundle config unset --local without; \
