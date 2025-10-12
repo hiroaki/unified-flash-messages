@@ -3,166 +3,13 @@ Japanese version: [README.ja.md](README.ja.md)
 
 # Unified Flash Messages Example
 
-This repository is a demo application that demonstrates the concept of handling both server-side flash messages and client-side messages with the same template and display logic. The example is implemented with Rails and Hotwire.
+This repository is a demo application that implements the Rails gem `flash-unified`, which provides a unified flash message rendering mechanism usable from both the server side and client side in Rails applications.
 
-The goal is to improve UI consistency and maintainability by displaying messages from different sources in a unified appearance and structure.
+Up to version v0.2.0, the project focused on implementing ideas for handling flash messages. Afterward, the reusable gem `flash-unified` was created, and this demo app was refactored to import and use that gem.
 
+For the concept and implementation background, please refer to the `flash-unified` gem repository:
 
-## Background and Issues
-
-With the standard usage of Rails flash, messages are limited to server-side redirects or rendering results. On the other hand, temporary client-side messages (used like flash) are often implemented with separate UIs (alert/toast/modal, etc.), which always raises concerns such as:
-
-- Maintaining consistency in wording and appearance due to separate templates
-- Adjusting display timing and position for each message source, and logic to avoid duplicate displays
-
-To solve these concerns, this app attempts a two-step process: generating messages = embedding them in the page, and rendering = formatting and displaying the embedded messages.
-
-The core of this implementation is the mechanism of "collecting messages by embedding them in the page before displaying, and rendering them at the appropriate timing." This does not depend on Rails, Hotwire, or the JavaScript implementation style, so it can be implemented in other frameworks or pure JavaScript as well.
-
-
-## Processing Flow Overview
-
-The main points are as follows:
-
-* Flash messages generated on the server are embedded in a hidden DOM (called "storage").
-* When displaying messages from the client side, the same process is followed: messages are first embedded in the storage.
-* When a page change occurs, messages embedded in the storage are retrieved, formatted with templates, and rendered in the display area.
-
-Below, the implementation details in this app are explained with concrete examples.
-
-The main implementation is in `app/javascript/flash_messages.js`. The JavaScript functions described below are exported as ES modules and should be imported for use.
-
-### Initialization
-
-On page load, call `initializeFlashMessageSystem()` to set up event listeners for page changes.
-
-### Embedding Messages (Server-side)
-
-When you set `redirect_to ..., notice: "..."` or `flash.now[:alert] = "..."` in the controller, generate a list with the following structure in the view (this is detected by `flash_messages.js`):
-
-```html
-<div data-flash-storage style="display: none;">
-  <ul>
-    <li data-type="alert">Alert message</li>
-  </ul>
-</div>
-```
-
-### Embedding Messages (Client-side)
-
-The process is the same as on the server side. To add the same HTML structure, call `appendMessageToStorage()`:
-
-```javascript
-appendMessageToStorage('Info message', 'info');
-```
-
-### Aggregation and Rendering
-
-When a response from the server is rendered, an event handler for page changes fires and executes `renderFlashMessages()`, which performs the following three steps:
-
-1. All `<li>` messages in `[data-flash-storage]` are collected.
-2. For each message `type`, the corresponding `<template>` is cloned and the display HTML is formatted.
-3. The results are inserted into `[data-flash-message-container]`.
-
-In other words, when server-side flash embedding occurs on the page, these steps run automatically.
-
-If you want to render messages at any timing on the client side, just call `renderFlashMessages()` directly:
-
-```javascript
-renderFlashMessages();
-```
-
-Once collected, messages are removed from the DOM to prevent duplicate display.
-
-
-## How to Use flash_messages.js
-
-The core of this demo is implemented in `app/javascript/flash_messages.js`. To use this file, set it up as follows.
-
-### JavaScript Setup
-
-This application uses Importmap, so add the mapping for `flash_messages.js` in `config/importmap.rb`:
-
-```ruby
-pin "flash_messages", to: "flash_messages.js"
-```
-
-Call the initialization function once on page load:
-
-```javascript
-import { initializeFlashMessageSystem } from "flash_messages"
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initializeFlashMessageSystem);
-} else {
-  initializeFlashMessageSystem();
-}
-```
-
-### Page Setup
-
-Set up `<template>` tags (one for each type) anywhere on the page:
-
-```html
-<template id="flash-message-template-alert">
-  <div class="bg-red-100" role="alert">
-    <span class="flash-message-text"></span>
-  </div>
-</template>
-<template id="flash-message-template-info">
-  <div class="bg-blue-100" role="alert">
-    <span class="flash-message-text"></span>
-  </div>
-</template>
-```
-
-Place the message display area wherever you like:
-
-```html
-<div data-flash-message-container="true">
-</div>
-```
-
-When `renderFlashMessages()` is executed, the embedded messages are inserted into the display area as follows. The source of the messages is not distinguished; if multiple messages exist on the page, all will be displayed:
-
-```html
-<div data-flash-message-container="true">
-  <div class="bg-red-100" role="alert">
-    <span class="flash-message-text">Alert message</span>
-  </div>
-  <div class="bg-blue-100" role="alert">
-    <span class="flash-message-text">Info message</span>
-  </div>
-</div>
-```
-
-Once collected, messages are removed from the DOM to prevent duplicate display.
-
-
-### Tag Helpers
-
-Since tag generation for setup is patterned, main helper functions are provided in `ApplicationHelper`:
-
-| Helper Function            | Description                                                                 |
-|----------------------------|-----------------------------------------------------------------------------|
-| `flash_storage`            | Generates a hidden DOM area to embed server-generated flash messages         |
-| `flash_templates`          | Generates HTML templates (`<template>` tags) for each message type          |
-| `flash_container`          | Generates a container (display area) for messages                           |
-| `flash_global_storage`     | Generates a global storage for Turbo Stream. Not needed if you do not use Turbo Stream. |
-| `flash_general_error_messages` | Generates a list of general messages for HTTP status and network errors. Used for the extension features described below. |
-
-
-### Public API
-
-The following functions are exported from `flash_messages.js`:
-
-| Function                                 | Description                                                                 |
-|------------------------------------------|-----------------------------------------------------------------------------|
-| `initializeFlashMessageSystem()`         | Registers events and initializes on page load                               |
-| `appendMessageToStorage(message, type='alert')` | Stores any message in the storage (for later rendering)              |
-| `renderFlashMessages()`                  | Aggregates messages from all storage and renders them using templates by type |
-| `clearFlashMessages(message?)`           | Clears displayed messages. If `message` is omitted, all messages are cleared |
-
+[https://github.com/hiroaki/flash-unified](https://github.com/hiroaki/flash-unified)
 
 ## Environment Setup
 
@@ -251,24 +98,14 @@ The index (list) page includes a filter form. This is implemented with a Turbo F
 | limit exceeded     | Enter a limit larger than the internal cap (10) and click Apply | alert: "limit must be <= 10"                  |
 
 
-Client-side messages are also implemented and can be checked as follows:
+Client-side messages are implemented and can be checked as follows:
 
 | Scenario           | Steps                                 | Expected Flash type and message                        |
 |--------------------|---------------------------------------|-------------------------------------------------------|
 | forbidden string   | Submit the string "test"              | alert: "Submission blocked: contains forbidden word."  |
 
 
-## Extensions (Optional)
-
-Currently, as an extension, when a `turbo:fetch-request-error` occurs (such as network disconnection), a general error message is generated and displayed.
-
-To simulate this, select "Offline" in the "Network" tab of the browser console (e.g., Chrome).
-
-Similarly, if an HTTP response error occurs when submitting a form and no flash is embedded in the response, a general error message is generated instead.
-
-Both use the main features of `flash_messages.js` and are included and configured accordingly.
-
-(These parts may be separated into another module in the future.)
+In addition, when the `turbo:fetch-request-error` event occurs, such as during a network disconnection, a general error message is generated and displayed. To simulate a network disconnection, you can select "Offline" in the "Network" tab of the browser console in Chrome.
 
 
 ## License
