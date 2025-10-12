@@ -1,16 +1,14 @@
-<template id="flash-message-template-notice">
-  <div class="flash-notice" role="alert">
-    <span class="flash-message-text"></span>
-  </div>
-</template>
-<template id="flash-message-template-warning">
-  <div class="flash-warning" role="alert">
-    <span class="flash-message-text"></span>
-  </div>
-</template>
-<template id="flash-message-template-alert">
-  <div class="flash-alert" role="alert">
-    <span class="flash-message-text"></span>
-  </div>
-</template>
-
+<%=
+templates = flash_template_definitions
+safe_join(
+  templates.map do |tpl|
+    content_tag(:template, id: "flash-message-template-#{tpl[:id]}") do
+      content_tag(:div,
+        content_tag(:span, "", class: "flash-message-text"),
+        class: "p-4 mb-4 text-sm rounded-lg #{tpl[:text_color]} #{tpl[:bg_color]}",
+        role: "alert"
+      )
+    end
+  end
+)
+%>
