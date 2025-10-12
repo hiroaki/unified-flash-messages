@@ -51,4 +51,3 @@ group :development do
 end
 
 gem "flash_unified", "0.1.0", path: "./gems"
-

@@ -15,10 +15,10 @@ class ApplicationController < ActionController::Base
   end
 
   def valid_user
-    ENV['BASIC_AUTH_USER'].presence
+    ENV["BASIC_AUTH_USER"].presence
   end
 
   def valid_pswd
-    ENV['BASIC_AUTH_PASSWORD'].presence
+    ENV["BASIC_AUTH_PASSWORD"].presence
   end
 end

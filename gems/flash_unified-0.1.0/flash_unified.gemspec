@@ -3,16 +3,16 @@ require_relative 'lib/flash_unified/version'
 Gem::Specification.new do |spec|
   spec.name          = "flash_unified"
   spec.version       = FlashUnified::VERSION
-  spec.authors       = ["hiroaki"]
-  spec.email         = ["176736+hiroaki@users.noreply.github.com"]
+  spec.authors       = [ "hiroaki" ]
+  spec.email         = [ "176736+hiroaki@users.noreply.github.com" ]
 
-  spec.summary       = %q{Unified server/client flash messages for Rails with consistent templates}
-  spec.description   = %q{Unified server/client flash messages for Rails with consistent templates—Turbo-ready, customizable, easy to integrate.}
+  spec.summary       = %q(Unified server/client flash messages for Rails with consistent templates)
+  spec.description   = %q(Unified server/client flash messages for Rails with consistent templates—Turbo-ready, customizable, easy to integrate.)
   spec.homepage      = "https://github.com/hiroaki/flash-unified"
   spec.license       = "0BSD"
   spec.required_ruby_version = Gem::Requirement.new(">= 3.2.0")
 
-  #spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
+  # spec.metadata["allowed_push_host"] = "TODO: Set to 'http://mygemserver.com'"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = spec.homepage
@@ -40,7 +40,7 @@ Gem::Specification.new do |spec|
     files << "lib/flash_unified/version.rb" unless files.include?("lib/flash_unified/version.rb")
     files.uniq
   end
-  spec.require_paths = ["lib"]
+  spec.require_paths = [ "lib" ]
 
   # Supported Rails versions: tested against 7.1, 7.2, 8.0
   spec.add_dependency "rails", ">= 7.1"
