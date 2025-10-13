@@ -40,6 +40,8 @@ builder:
 
 env:
   secret:
+    - BASIC_AUTH_USER
+    - BASIC_AUTH_PASSWORD
     - SECRET_KEY_BASE
 
 ssh:

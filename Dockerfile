@@ -69,6 +69,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qq \
   curl \
   libsqlite3-0 \
   tzdata \
+  && if [ "$RAILS_ENV" = "development" ]; then \
+    apt-get install --no-install-recommends -y build-essential pkg-config libyaml-dev libsqlite3-dev; \
+  fi \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy built artifacts: gems, application
