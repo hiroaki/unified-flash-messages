@@ -50,4 +50,4 @@ group :development do
   gem "web-console"
 end
 
-gem "flash_unified", "0.1.0", path: "./gems"
+gem "flash_unified"
