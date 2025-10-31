@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { appendMessageToStorage, renderFlashMessages, clearFlashMessages } from "flash_unified"
+import { appendMessageToStorage, renderFlashMessages, clearFlashMessages } from "flash_unified/all"
 
 // Minimal NG-word filter for demo purposes.
 // Blocks form submission if any input/textarea contains the word "test" (case-insensitive).
