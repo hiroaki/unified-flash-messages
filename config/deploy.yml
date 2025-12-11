@@ -23,10 +23,7 @@ proxy:
 <% end %>
 
 registry:
-  server: <%= ENV.fetch('DEPLOY_REGISTRY_SERVER') %>
-  username: <%= ENV.fetch('DEPLOY_REGISTRY_USERNAME') %>
-  password:
-    - DEPLOY_REGISTRY_PASSWORD
+  server: localhost:5555
 
 builder:
   arch:
